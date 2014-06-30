@@ -1,0 +1,14 @@
+{application, letcd,
+ [{description, "Lightweight etcd client for V2 API"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications, [kernel,
+                  stdlib,
+                  lhttpc,
+                  lejson
+                 ]},
+  {mod, {letcd_app, no_arg}},
+  {env, [{etcd_host, "127.0.0.1"},
+         {etcd_client_port, 4001},
+         {etcd_admin_port, 7001}]}
+ ]}.
