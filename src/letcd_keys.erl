@@ -15,7 +15,8 @@
                  | sequence
                  | {prevValue, term()}
                  | {prevIndex, term()}
-                 | {ttl, term()}.
+                 | {ttl, term()}
+                 | {ttl_renew, term()}.
 
 -type del_opt() :: dir
                  | prevExist
@@ -44,12 +45,16 @@ set(Path, Value, Opts) when is_binary(Path) ->
     set(binary_to_list(Path), Value, Opts);
 set(Path, Value, Opts) ->
     FullPath = "/v2/keys" ++ letcd_lib:ensure_first_slash(Path),
-    FullOpts = [{value, Value} | Opts],
-    case proplists:get_bool(sequence, Opts) of
+    {FullOpts, Renew, TTL} = check_for_ttl([{value, Value} | Opts]),
+    IsSequence = proplists:get_bool(sequence, FullOpts),
+    Method = case IsSequence of true -> post; false -> put end,
+    Res = letcd_lib:call(Method, etcd_client_port, FullPath, FullOpts),
+    case Renew of
         true ->
-            letcd_lib:call(post, etcd_client_port, FullPath, FullOpts);
+            letcd_ttl:new(Path, TTL),
+            Res;
         false ->
-            letcd_lib:call(put, etcd_client_port, FullPath, FullOpts)
+            Res
     end.
 
 -spec del(string()) -> {ok, #{}} | {error, #{}}.
@@ -60,3 +65,13 @@ del(Path) ->
 del(Path, Opts) ->
     NewPath = "/v2/keys" ++ letcd_lib:ensure_first_slash(Path),
     letcd_lib:call(delete, etcd_client_port, NewPath, Opts).
+
+%% Internal -------------------------------------------------------------------
+
+check_for_ttl(Opts) ->
+    case lists:keyfind(ttl_renew, 1, Opts) of
+        {ttl_renew, TTL} ->
+            {lists:keyreplace(ttl_renew, 1, Opts, {ttl, TTL}), true, TTL};
+        false ->
+            {Opts, false, infinity}
+    end.

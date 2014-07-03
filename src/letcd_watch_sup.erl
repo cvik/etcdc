@@ -1,4 +1,4 @@
-%%  Supervisor for letcd_watch:es
+%%  Supervisor for letcd_watch jobs
 %%
 %% ----------------------------------------------------------------------------
 

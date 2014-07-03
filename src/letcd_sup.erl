@@ -22,8 +22,9 @@ start_link() ->
 init(no_arg) ->
     WatchSup = child(letcd_watch_sup, letcd_watch_sup, supervisor, []),
     StreamSup = child(letcd_stream_sup, letcd_stream_sup, supervisor, []),
+    TTLSup = child(letcd_ttl_sup, letcd_ttl_sup, supervisor, []),
     Strategy = {one_for_one, 1, 10},
-    {ok, {Strategy, [WatchSup, StreamSup]}}.
+    {ok, {Strategy, [WatchSup, StreamSup, TTLSup]}}.
 
 %% ----------------------------------------------------------------------------
 

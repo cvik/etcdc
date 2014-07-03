@@ -1,8 +1,8 @@
-%%  Supervisor for letcd_stream jobs
+%%  Supervisor for letcd_ttl jobs
 %%
 %% ----------------------------------------------------------------------------
 
--module(letcd_stream_sup).
+-module(letcd_ttl_sup).
 
 -copyright("Christoffer Vikström <chvi77@gmail.com>").
 
@@ -23,9 +23,9 @@ add_child(Args) ->
 %% ----------------------------------------------------------------------------
 
 init(no_arg) ->
-    StreamWorker = child(letcd_stream, letcd_stream, worker, []),
+    TTLWorker = child(letcd_ttl, letcd_ttl, worker, []),
     Strategy = {simple_one_for_one, 1, 60},
-    {ok, {Strategy, [StreamWorker]}}.
+    {ok, {Strategy, [TTLWorker]}}.
 
 %% ----------------------------------------------------------------------------
 

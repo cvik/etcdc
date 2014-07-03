@@ -2,7 +2,7 @@
 
 -export([start/0, stop/0]).
 -export([get/1, get/2, set/2, set/3, del/1, del/2]).
--export([watch/2, watch_continous/1, stop_watch/1]).
+-export([watch/2, watch_continous/2, stop_watch/1]).
 -export([stats_leader/0, stats_self/0, stats_store/0]).
 -export([get_config/0, set_config/3, list_machines/0, del_machine/1]).
 -export([leader/0, peers/0]).
@@ -54,15 +54,23 @@ del(Path, Opts) ->
 
 %% Watch ----------------------------------------------------------------------
 
+-spec watch(Key :: string(), Recursive :: boolean()) ->
+        {ok, Pid :: pid()}
+      | {error, Reason :: term()}.
 watch(Key, false) ->
     letcd_watch:new(Key, []);
 watch(Key, true) ->
     letcd_watch:new(Key, [recursive]).
 
-%% TODO: Add recursive streaming watches
-watch_continous(Key) ->
-    letcd_stream:new(Key).
+-spec watch_continous(Key :: string(), Recursive :: boolean()) ->
+        {ok, Pid :: pid()}
+      | {error, Reason :: term()}.
+watch_continous(Key, true) ->
+    letcd_stream:new(Key, true);
+watch_continous(Key, false) ->
+    letcd_stream:new(Key, false).
 
+-spec stop_watch(Pid :: pid()) -> ok.
 stop_watch(Pid) ->
     letcd_stream:stop(Pid).
 
@@ -107,7 +115,7 @@ verify_opts(Cmd, Opts) ->
 get_allowed_opts(get) ->
     [recursive, consistent, sorted, stream, wait, waitIndex];
 get_allowed_opts(set) ->
-    [dir, prevExist, sequence, prevValue, prevIndex, ttl];
+    [dir, prevExist, sequence, prevValue, prevIndex, ttl, ttl_renew];
 get_allowed_opts(del) ->
     [recursive, sorted, stream, wait, waitIndex];
 get_allowed_opts(_) ->
