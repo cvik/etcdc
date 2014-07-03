@@ -7,21 +7,48 @@
 -export([get_config/0, set_config/3, list_machines/0, del_machine/1]).
 -export([leader/0, peers/0]).
 
+%% Types ----------------------------------------------------------------------
+
+-type get_opt() :: recursive
+                 | consistent
+                 | sorted
+                 | stream
+                 | wait
+                 | {waitIndex, integer()}.
+-type set_opt() :: dir
+                 | prevExist
+                 | sequence
+                 | {ttl, term()}
+                 | {ttl_renew, term()}
+                 | {prevIndex, term()}
+                 | {prevValue, term()}.
+
+-type del_opt() :: dir
+                 | prevExist
+                 | {prevIndex, term()}
+                 | {prevValue, term()}.
+
 %% Management -----------------------------------------------------------------
 
+%% @doc Start the letcd application and it's dependencies
+-spec start() -> ok | {error, any()}.
 start() ->
     Deps = [crypto, asn1, public_key, ssl, lhttpc, lejson],
     [ application:start(A) || A <- Deps ],
     application:start(?MODULE).
 
+%% @doc Stop the letcd application
+-spec stop() -> ok.
 stop() ->
     application:stop(?MODULE).
 
 %% Keys -----------------------------------------------------------------------
 
+-spec get(string()) -> {ok, #{}} | {error, #{}}.
 get(Path) ->
     letcd_keys:get(Path).
 
+-spec get(string(), [get_opt()]) -> {ok, #{}} | {error, #{}}.
 get(Path, Opts) ->
     case verify_opts(get, Opts) of
         true ->
@@ -30,9 +57,11 @@ get(Path, Opts) ->
             {error, bad_arg}
     end.
 
+-spec set(string(), iolist()) -> {ok, #{}} | {error, #{}}.
 set(Path, Value) ->
     letcd_keys:set(Path, Value).
 
+-spec set(string(), iolist(), [set_opt()]) -> {ok, #{}} | {error, #{}}.
 set(Path, Value, Opts) ->
     case verify_opts(set, Opts) of
         true ->
@@ -41,13 +70,15 @@ set(Path, Value, Opts) ->
             {error, bad_arg}
     end.
 
-del(Path) ->
-    letcd_keys:del(Path).
+-spec del(string()) -> {ok, #{}} | {error, #{}}.
+del(Key) ->
+    letcd_keys:del(Key).
 
-del(Path, Opts) ->
-    case verify_opts(set, Opts) of
+-spec del(string(), [del_opt()]) -> {ok, #{}} | {error, #{}}.
+del(Key, Opts) ->
+    case verify_opts(del, Opts) of
         true ->
-            letcd_keys:del(Path, Opts);
+            letcd_keys:del(Key, Opts);
         false ->
             {error, bad_arg}
     end.
@@ -76,32 +107,41 @@ stop_watch(Pid) ->
 
 %% Stats ----------------------------------------------------------------------
 
+-spec stats_leader() -> {ok, #{}} | {error, #{}}.
 stats_leader() ->
     letcd_stats:leader().
 
+-spec stats_self() -> {ok, #{}} | {error, #{}}.
 stats_self() ->
     letcd_stats:self().
 
+-spec stats_store() -> {ok, #{}} | {error, #{}}.
 stats_store() ->
     letcd_stats:store().
 
 %% Admin ----------------------------------------------------------------------
 
+-spec get_config() -> {ok, #{}} | {error, #{}}.
 get_config() ->
     letcd_admin:get_config().
 
+-spec set_config(integer(), integer(), integer()) -> {ok, #{}} | {error, #{}}.
 set_config(ActiveSize, RemoveDelay, SyncInterval) ->
     letcd_admin:set_config(ActiveSize, RemoveDelay, SyncInterval).
 
+-spec list_machines() -> {ok, #{}} | {error, #{}}.
 list_machines() ->
     letcd_admin:list_machines().
 
+-spec del_machine(MachineId :: string()) -> {ok, <<>>} | {error, any()}.
 del_machine(MachineId) ->
     letcd_admin:del_machine(MachineId).
 
+-spec leader() -> {ok, string()} | {error, any()}.
 leader() ->
     letcd_lib:call(get, etcd_client_port, "/v2/leader", []).
 
+-spec peers() -> {ok, string()} | {error, any()}.
 peers() ->
     letcd_lib:call(get, etcd_client_port, "/v2/peers", []).
 
