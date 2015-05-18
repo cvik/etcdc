@@ -1,0 +1,16 @@
+*~
+*.beam
+*.app
+deps/*
+*.orig
+.eunit
+erl_crash.dump
+*.log
+*.swp
+*.swo
+.rebar/
+doc/
+ec_gaw.plt
+logs/
+rel/sys.config
+_rel
