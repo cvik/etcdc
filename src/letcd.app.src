@@ -7,6 +7,7 @@
                   lhttpc,
                   lejson
                  ]},
+  {modules, []},
   {mod, {letcd_app, no_arg}},
   {env, [{etcd_host, "127.0.0.1"},
          {etcd_client_port, 4001},
