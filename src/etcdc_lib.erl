@@ -16,7 +16,7 @@ call(Method, PortType, Path, Opts, Value) ->
     Url = url(Host, Port, Path, proplists:unfold(Opts)),
     case lhttpc:request(Url, Method, [], Value, Timeout) of
         {ok, {{Code, _}, _, Body}} when Code >= 200, Code =< 205 ->
-            {ok, parse_response(Body)};
+            parse_response(Body);
         {ok, {{404, _}, _, _}} ->
             {error, not_found};
         {ok, {{_, _}, _, Body}} ->
