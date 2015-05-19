@@ -2,7 +2,7 @@
 %%
 %% ----------------------------------------------------------------------------
 
--module(letcd_stream).
+-module(etcdc_stream).
 
 -copyright("Christoffer Vikström <chvi77@gmail.com>").
 
@@ -21,7 +21,7 @@ start_link(Key, Ctrl, Recursive) ->
     gen_server:start_link(?MODULE, [Key, Ctrl, Recursive], []).
 
 new(Key, Recursive) ->
-    letcd_stream_sup:add_child([Key, self(), Recursive]).
+    etcdc_stream_sup:add_child([Key, self(), Recursive]).
 
 stop(Pid) ->
     gen_server:call(Pid, stop).
@@ -31,8 +31,8 @@ stop(Pid) ->
 init([Key, Ctrl, Recursive]) ->
     Qs = "?wait=true&stream=true",
     RecQs = case Recursive of true -> "&recursive=true"; false -> "" end,
-    FullKey = "/v2/keys" ++ letcd_lib:ensure_first_slash(Key) ++ Qs ++ RecQs,
-    {ok, _, Sock} = letcd_lib:async_connect(FullKey, 5000),
+    FullKey = "/v2/keys" ++ etcdc_lib:ensure_first_slash(Key) ++ Qs ++ RecQs,
+    {ok, _, Sock} = etcdc_lib:async_connect(FullKey, 5000),
     ok = inet:setopts(Sock, [{active, once}]),
     {ok, #state{sock=Sock, ctrl=Ctrl, key=Key, parts=[]}, 0}.
 
@@ -79,9 +79,9 @@ code_change(_, State, _) ->
 process_chunks(Chunks) ->
     case binary:split(list_to_binary(Chunks), <<"\r\n">>, [global]) of
         [_Len, Body, <<>>] ->
-            {watch, self(), letcd_lib:parse_response(Body)};
+            {watch, self(), etcdc_lib:parse_response(Body)};
         [_Len, Body, <<"0">>, <<>>, <<>>] ->
-            {watch, self(), letcd_lib:parse_response(Body)};
+            {watch, self(), etcdc_lib:parse_response(Body)};
         Other ->
             {watch_error, self(), Other}
     end.

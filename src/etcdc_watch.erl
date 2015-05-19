@@ -2,7 +2,7 @@
 %%
 %% ----------------------------------------------------------------------------
 
--module(letcd_watch).
+-module(etcdc_watch).
 
 -copyright("Christoffer Vikström <chvi77@gmail.com>").
 
@@ -21,7 +21,7 @@ start_link(Key, Ctrl, Opts) ->
     gen_server:start_link(?MODULE, [Key, Ctrl, Opts], []).
 
 new(Key, Opts) ->
-    letcd_watch_sup:add_child([Key, self(), Opts]).
+    etcdc_watch_sup:add_child([Key, self(), Opts]).
 
 %% gen_server callbacks -------------------------------------------------------
 
@@ -35,7 +35,7 @@ handle_cast(_, State) ->
     {noreply, State}.
 
 handle_info(timeout, #state{key=Key, ctrl=Ctrl, opts=Opts} = State) ->
-    case letcd:get(Key, [wait|Opts--[wait]]) of
+    case etcdc:get(Key, [wait|Opts--[wait]]) of
         {ok, Response} ->
             Ctrl ! {watch, self(), Response},
             {stop, normal, State};

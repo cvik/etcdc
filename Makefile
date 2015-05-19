@@ -1,4 +1,4 @@
-PROJECT = letcd
+PROJECT = etcdc
 TAG = $(shell cat src/$(PROJECT).app.src | \
 	    sed -n -e 's/{vsn, \"\(.*\)\"},/\1/p' | \
 		xargs)

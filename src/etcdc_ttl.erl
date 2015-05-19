@@ -5,7 +5,7 @@
 %%
 %% ----------------------------------------------------------------------------
 
--module(letcd_ttl).
+-module(etcdc_ttl).
 
 -copyright("Christoffer Vikström <chvi77@gmail.com>").
 
@@ -24,7 +24,7 @@ start_link(Key, TTL, Ctrl) ->
     gen_server:start_link(?MODULE, [Key, TTL, Ctrl], []).
 
 new(Key, TTL) ->
-    letcd_ttl_sup:add_child([Key, TTL, self()]).
+    etcdc_ttl_sup:add_child([Key, TTL, self()]).
 
 %% gen_server callbacks -------------------------------------------------------
 
@@ -41,7 +41,7 @@ handle_cast(_, State) ->
     {noreply, State}.
 
 handle_info(renew_ttl, #state{key=Key, ttl=TTL} = State) ->
-    case letcd:set(Key, <<>>, [{ttl, TTL}, prevExist]) of
+    case etcdc:set(Key, <<>>, [{ttl, TTL}, prevExist]) of
         {ok, _} ->
             {ok, _} = timer:send_after(round(TTL * 1000 * 0.2), renew_ttl),
             {noreply, State};

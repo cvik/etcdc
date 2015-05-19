@@ -1,4 +1,4 @@
--module(letcd_test).
+-module(etcdc_test).
 
 -compile(export_all).
 

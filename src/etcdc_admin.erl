@@ -1,4 +1,4 @@
--module(letcd_admin).
+-module(etcdc_admin).
 
 -export([get_config/0, set_config/3,
          list_machines/0, del_machine/1]).
@@ -7,7 +7,7 @@
 
 -spec get_config() -> {ok, #{}} | {error, #{}}.
 get_config() ->
-    letcd_lib:call(get, etcd_admin_port, "/v2/admin/config", []).
+    etcdc_lib:call(get, etcd_admin_port, "/v2/admin/config", []).
 
 -spec set_config(integer(), integer(), integer()) -> {ok, #{}} | {error, #{}}.
 set_config(ActiveSize, RemoveDelay, SyncInterval) ->
@@ -16,13 +16,13 @@ set_config(ActiveSize, RemoveDelay, SyncInterval) ->
           <<"syncInterval">> => SyncInterval},
     Value = lejson:encode(M),
     io:format("payload: ~s~n", [Value]),
-    letcd_lib:call(put, etcd_admin_port, "/v2/admin/config", [], Value).
+    etcdc_lib:call(put, etcd_admin_port, "/v2/admin/config", [], Value).
 
 -spec list_machines() -> {ok, #{}} | {error, #{}}.
 list_machines() ->
-    letcd_lib:call(get, etcd_admin_port, "/v2/admin/machines", []).
+    etcdc_lib:call(get, etcd_admin_port, "/v2/admin/machines", []).
 
 -spec del_machine(iolist()) -> {ok, #{}} | {error, #{}}.
 del_machine(MachineName) ->
     Path = "v2/admin/machines/" ++ MachineName,
-    letcd_lib:call(delete, etcd_admin_port, Path, []).
+    etcdc_lib:call(delete, etcd_admin_port, Path, []).

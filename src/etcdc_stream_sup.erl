@@ -1,8 +1,8 @@
-%%  Supervisor for letcd_stream jobs
+%%  Supervisor for etcdc_stream jobs
 %%
 %% ----------------------------------------------------------------------------
 
--module(letcd_stream_sup).
+-module(etcdc_stream_sup).
 
 -copyright("Christoffer Vikström <chvi77@gmail.com>").
 
@@ -23,7 +23,7 @@ add_child(Args) ->
 %% ----------------------------------------------------------------------------
 
 init(no_arg) ->
-    StreamWorker = child(letcd_stream, letcd_stream, worker, []),
+    StreamWorker = child(etcdc_stream, etcdc_stream, worker, []),
     Strategy = {simple_one_for_one, 1, 60},
     {ok, {Strategy, [StreamWorker]}}.
 

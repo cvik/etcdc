@@ -1,4 +1,4 @@
--module(letcd_lib).
+-module(etcdc_lib).
 
 -export([call/4, call/5, ensure_first_slash/1,
          async_connect/2, parse_response/1]).
@@ -53,8 +53,8 @@ parse_response(Body) ->
 %% ----------------------------------------------------------------------------
 
 get_server_info(PortType) ->
-    {ok, Host} = application:get_env(letcd, etcd_host),
-    {ok, Port} = application:get_env(letcd, PortType),
+    {ok, Host} = application:get_env(etcdc, etcd_host),
+    {ok, Port} = application:get_env(etcdc, PortType),
     {Host, Port}.
 
 get_timeout(Opts) ->

@@ -1,4 +1,4 @@
--module(letcd).
+-module(etcdc).
 
 -export([start/0, stop/0]).
 -export([get/1, get/2, set/2, set/3, del/1, del/2]).
@@ -30,14 +30,14 @@
 
 %% Management -----------------------------------------------------------------
 
-%% @doc Start the letcd application and it's dependencies
+%% @doc Start the etcdc application and it's dependencies
 -spec start() -> ok | {error, any()}.
 start() ->
     Deps = [crypto, asn1, public_key, ssl, lhttpc, lejson],
     [ application:start(A) || A <- Deps ],
     application:start(?MODULE).
 
-%% @doc Stop the letcd application
+%% @doc Stop the etcdc application
 -spec stop() -> ok.
 stop() ->
     application:stop(?MODULE).
@@ -46,39 +46,39 @@ stop() ->
 
 -spec get(string()) -> {ok, #{}} | {error, #{}}.
 get(Path) ->
-    letcd_keys:get(Path).
+    etcdc_keys:get(Path).
 
 -spec get(string(), [get_opt()]) -> {ok, #{}} | {error, #{}}.
 get(Path, Opts) ->
     case verify_opts(get, Opts) of
         true ->
-            letcd_keys:get(Path, Opts);
+            etcdc_keys:get(Path, Opts);
         false ->
             {error, bad_arg}
     end.
 
 -spec set(string(), iolist()) -> {ok, #{}} | {error, #{}}.
 set(Path, Value) ->
-    letcd_keys:set(Path, Value).
+    etcdc_keys:set(Path, Value).
 
 -spec set(string(), iolist(), [set_opt()]) -> {ok, #{}} | {error, #{}}.
 set(Path, Value, Opts) ->
     case verify_opts(set, Opts) of
         true ->
-            letcd_keys:set(Path, Value, Opts);
+            etcdc_keys:set(Path, Value, Opts);
         false ->
             {error, bad_arg}
     end.
 
 -spec del(string()) -> {ok, #{}} | {error, #{}}.
 del(Key) ->
-    letcd_keys:del(Key).
+    etcdc_keys:del(Key).
 
 -spec del(string(), [del_opt()]) -> {ok, #{}} | {error, #{}}.
 del(Key, Opts) ->
     case verify_opts(del, Opts) of
         true ->
-            letcd_keys:del(Key, Opts);
+            etcdc_keys:del(Key, Opts);
         false ->
             {error, bad_arg}
     end.
@@ -89,61 +89,61 @@ del(Key, Opts) ->
         {ok, Pid :: pid()}
       | {error, Reason :: term()}.
 watch(Key, false) ->
-    letcd_watch:new(Key, []);
+    etcdc_watch:new(Key, []);
 watch(Key, true) ->
-    letcd_watch:new(Key, [recursive]).
+    etcdc_watch:new(Key, [recursive]).
 
 -spec watch_continous(Key :: string(), Recursive :: boolean()) ->
         {ok, Pid :: pid()}
       | {error, Reason :: term()}.
 watch_continous(Key, true) ->
-    letcd_stream:new(Key, true);
+    etcdc_stream:new(Key, true);
 watch_continous(Key, false) ->
-    letcd_stream:new(Key, false).
+    etcdc_stream:new(Key, false).
 
 -spec stop_watch(Pid :: pid()) -> ok.
 stop_watch(Pid) ->
-    letcd_stream:stop(Pid).
+    etcdc_stream:stop(Pid).
 
 %% Stats ----------------------------------------------------------------------
 
 -spec stats_leader() -> {ok, #{}} | {error, #{}}.
 stats_leader() ->
-    letcd_stats:leader().
+    etcdc_stats:leader().
 
 -spec stats_self() -> {ok, #{}} | {error, #{}}.
 stats_self() ->
-    letcd_stats:self().
+    etcdc_stats:self().
 
 -spec stats_store() -> {ok, #{}} | {error, #{}}.
 stats_store() ->
-    letcd_stats:store().
+    etcdc_stats:store().
 
 %% Admin ----------------------------------------------------------------------
 
 -spec get_config() -> {ok, #{}} | {error, #{}}.
 get_config() ->
-    letcd_admin:get_config().
+    etcdc_admin:get_config().
 
 -spec set_config(integer(), integer(), integer()) -> {ok, #{}} | {error, #{}}.
 set_config(ActiveSize, RemoveDelay, SyncInterval) ->
-    letcd_admin:set_config(ActiveSize, RemoveDelay, SyncInterval).
+    etcdc_admin:set_config(ActiveSize, RemoveDelay, SyncInterval).
 
 -spec list_machines() -> {ok, #{}} | {error, #{}}.
 list_machines() ->
-    letcd_admin:list_machines().
+    etcdc_admin:list_machines().
 
 -spec del_machine(MachineId :: string()) -> {ok, <<>>} | {error, any()}.
 del_machine(MachineId) ->
-    letcd_admin:del_machine(MachineId).
+    etcdc_admin:del_machine(MachineId).
 
 -spec leader() -> {ok, string()} | {error, any()}.
 leader() ->
-    letcd_lib:call(get, etcd_client_port, "/v2/leader", []).
+    etcdc_lib:call(get, etcd_client_port, "/v2/leader", []).
 
 -spec peers() -> {ok, string()} | {error, any()}.
 peers() ->
-    letcd_lib:call(get, etcd_client_port, "/v2/peers", []).
+    etcdc_lib:call(get, etcd_client_port, "/v2/peers", []).
 
 %% Internal -------------------------------------------------------------------
 

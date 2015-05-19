@@ -1,8 +1,8 @@
-%%  Supervisor for letcd_watch jobs
+%%  Supervisor for etcdc_ttl jobs
 %%
 %% ----------------------------------------------------------------------------
 
--module(letcd_watch_sup).
+-module(etcdc_ttl_sup).
 
 -copyright("Christoffer Vikström <chvi77@gmail.com>").
 
@@ -23,11 +23,11 @@ add_child(Args) ->
 %% ----------------------------------------------------------------------------
 
 init(no_arg) ->
-    WatchWorker = child(letcd_watch, letcd_watch, worker, []),
+    TTLWorker = child(etcdc_ttl, etcdc_ttl, worker, []),
     Strategy = {simple_one_for_one, 1, 60},
-    {ok, {Strategy, [WatchWorker]}}.
+    {ok, {Strategy, [TTLWorker]}}.
 
 %% ----------------------------------------------------------------------------
 
 child(Name, Mod, Type, Args) ->
-    {Name, {Mod, start_link, Args}, permanent, 3000, Type, [Mod]}.
+    {Name, {Mod, start_link, Args}, transient, 3000, Type, [Mod]}.

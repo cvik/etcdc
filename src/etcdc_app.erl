@@ -1,8 +1,8 @@
-%%  Application callback for letcd
+%%  Application callback for etcdc
 %%
 %% ----------------------------------------------------------------------------
 
--module(letcd_app).
+-module(etcdc_app).
 
 -copyright("Christoffer Vikström <chvi77@gmail.com>").
 
@@ -13,7 +13,7 @@
 %% ----------------------------------------------------------------------------
 
 start(_, _) ->
-    letcd_sup:start_link().
+    etcdc_sup:start_link().
 
 prep_stop(State) ->
     State.
