@@ -33,9 +33,7 @@
 %% @doc Start the etcdc application and it's dependencies
 -spec start() -> ok | {error, any()}.
 start() ->
-    Deps = [crypto, asn1, public_key, ssl, lhttpc, lejson],
-    [ application:start(A) || A <- Deps ],
-    application:start(?MODULE).
+    application:ensure_all_started(?MODULE).
 
 %% @doc Stop the etcdc application
 -spec stop() -> ok.
