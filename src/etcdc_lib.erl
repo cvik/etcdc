@@ -3,6 +3,8 @@
 -export([call/4, call/5, ensure_first_slash/1,
          async_connect/2, parse_response/1]).
 
+-export([url_encode/1, url_decode/1]).
+
 -define(DEFAULT_TIMEOUT, timer:seconds(10)).
 
 %% ----------------------------------------------------------------------------
@@ -107,32 +109,53 @@ to_underscore([], Stack, Res) ->
     [ string:to_lower(P) || P <- lists:reverse([lists:reverse(Stack)|Res]),
                             length(P) > 0 ].
 
-url_encode(Value) ->
-    process_chars(Value, safe_chars(), []).
+%% Url encode/decode ----------------------------------------------------------
 
-process_chars([$\s|Value], Safe, Acc) ->
-    process_chars(Value, Safe, [$+|Acc]);
-process_chars([C|Value], Safe, Acc) ->
+url_encode(Value) ->
+    encode_chars(Value, safe_chars(), []).
+
+encode_chars([$\s|Value], Safe, Acc) ->
+    encode_chars(Value, Safe, [$+|Acc]);
+encode_chars([C|Value], Safe, Acc) ->
     case lists:member(C, Safe) of
         true ->
-            process_chars(Value, Safe, [C|Acc]);
+            encode_chars(Value, Safe, [C|Acc]);
         false ->
-           process_chars(Value, Safe, [encode_char(C)|Acc])
+           encode_chars(Value, Safe, [encode_char(C)|Acc])
     end;
-process_chars([], _, Acc) ->
+encode_chars([], _, Acc) ->
     lists:reverse(Acc).
 
 encode_char(Char) ->
     <<Hi:4, Lo:4>> = <<Char:8>>,
-    [$%, hex(Hi), hex(Lo)].
+    [$%, to_hex(Hi), to_hex(Lo)].
 
-hex(10) -> $a;
-hex(11) -> $b;
-hex(12) -> $c;
-hex(13) -> $d;
-hex(14) -> $e;
-hex(15) -> $f;
-hex(N) when N < 10 -> $0 + N.
+url_decode(Value) ->
+    decode_chars(Value, []).
+
+decode_chars([$%, Hi, Lo|Rest], Res) ->
+    <<Char:8>> = <<(from_hex(Hi)):4, (from_hex(Lo)):4>>,
+    decode_chars(Rest, [Char|Res]);
+decode_chars([C|Rest], Res) ->
+    decode_chars(Rest, [C|Res]);
+decode_chars([], Res) ->
+    lists:reverse(Res).
+
+to_hex(10) -> $a;
+to_hex(11) -> $b;
+to_hex(12) -> $c;
+to_hex(13) -> $d;
+to_hex(14) -> $e;
+to_hex(15) -> $f;
+to_hex(N) when N < 10 -> $0 + N.
+
+from_hex($a) -> 10;
+from_hex($b) -> 11;
+from_hex($c) -> 12;
+from_hex($d) -> 13;
+from_hex($e) -> 14;
+from_hex($f) -> 15;
+from_hex(N) -> N-$0.
 
 safe_chars() ->
     lists:append([lists:seq($a, $z),

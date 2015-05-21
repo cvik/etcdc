@@ -42,11 +42,11 @@ handle_cast(_, State) ->
 
 handle_info(renew_ttl, #state{key=Key, ttl=TTL} = State) ->
     case etcdc:set(Key, <<>>, [{ttl, TTL}, prevExist]) of
-        {ok, _} ->
-            {ok, _} = timer:send_after(round(TTL * 1000 * 0.2), renew_ttl),
-            {noreply, State};
         {error, _} ->
-            {stop, normal, State}
+            {stop, normal, State};
+        #{} ->
+            {ok, _} = timer:send_after(round(TTL * 1000 * 0.2), renew_ttl),
+            {noreply, State}
     end;
 handle_info({'EXIT', Ctrl, _}, #state{ctrl=Ctrl} = State) ->
     {stop, normal, State};

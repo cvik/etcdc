@@ -36,11 +36,11 @@ handle_cast(_, State) ->
 
 handle_info(timeout, #state{key=Key, ctrl=Ctrl, opts=Opts} = State) ->
     case etcdc:get(Key, [wait|Opts--[wait]]) of
-        {ok, Response} ->
-            Ctrl ! {watch, self(), Response},
-            {stop, normal, State};
         {error, Error} ->
             Ctrl ! {watch_error, self(), Error},
+            {stop, normal, State};
+        #{} = Response ->
+            Ctrl ! {watch, self(), Response},
             {stop, normal, State}
     end;
 handle_info(_, State) ->
