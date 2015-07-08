@@ -2,7 +2,7 @@
 
 Requires R17 since it produces maps on decode.
 
-Latest Tag: 0.1.0
+Latest Tag: 0.2.0
 
 
 ## License
