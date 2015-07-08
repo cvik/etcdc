@@ -1,7 +1,6 @@
 -module(etcdc_lib).
 
--export([call/4, call/5, ensure_first_slash/1,
-         async_connect/2, parse_response/1]).
+-export([call/4, call/5, ensure_first_slash/1, parse_response/1]).
 
 -export([url_encode/1, url_decode/1]).
 
@@ -29,20 +28,6 @@ call(Method, PortType, Path, Opts, Value) ->
 
 ensure_first_slash([$/|_] = Path) -> Path;
 ensure_first_slash(Path) -> [$/|Path].
-
-async_connect(Path, Timeout) ->
-    {Host, Port} = get_server_info(etcd_client_port),
-    Opts = [binary, {active, once}, {packet, 0}],
-    {ok, Sock} = gen_tcp:connect(Host, Port, Opts),
-    P = case is_binary(Path) of true -> Path; false -> list_to_binary(Path) end,
-    Pl = <<"GET ", P/binary, " HTTP/1.1\r\n\r\n">>,
-    ok = gen_tcp:send(Sock, Pl),
-    receive
-        {tcp, Sock, Headers} ->
-            {ok, Headers, Sock}
-    after Timeout ->
-        {error, timeout}
-    end.
 
 parse_response(Body) ->
     case lejson:decode(Body) of
