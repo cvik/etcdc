@@ -1,3 +1,5 @@
 # Todo
     - Functionality to be able to terminate watch and ttl-watches
     - Fix slight race-condition when setting value with ttl
+    - Handle async_connections better. Use erlng:decode_packet/3 for http
+    - Add utility functions to facade: mkdir, rmdir, ls
