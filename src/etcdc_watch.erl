@@ -13,7 +13,7 @@
 -export([init/1, handle_call/3, handle_cast/2,
          handle_info/2, code_change/3, terminate/2]).
 
--record(state, {key, ctrl, opts}).
+-record(state, {key, ctrl, opts, mon_ref}).
 
 %% Management Api -------------------------------------------------------------
 
@@ -26,7 +26,8 @@ new(Key, Opts) ->
 %% gen_server callbacks -------------------------------------------------------
 
 init([Key, Ctrl, Opts]) ->
-    {ok, #state{key=Key, ctrl=Ctrl, opts=Opts}, 0}.
+    MonRef = erlang:monitor(process, Ctrl),
+    {ok, #state{key=Key, ctrl=Ctrl, opts=Opts, mon_ref=MonRef}, 0}.
 
 handle_call(_, _, State) ->
     {noreply, State}.
@@ -43,6 +44,8 @@ handle_info(timeout, #state{key=Key, ctrl=Ctrl, opts=Opts} = State) ->
             Ctrl ! {watch, self(), Response},
             {stop, normal, State}
     end;
+handle_info({'DOWN', MonRef, _, _, _}, #state{mon_ref=MonRef} = State) ->
+    {stop, normal, State};
 handle_info(_, State) ->
     {noreply, State}.
 
