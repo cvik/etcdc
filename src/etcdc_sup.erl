@@ -21,10 +21,9 @@ start_link() ->
 
 init(no_arg) ->
     WatchSup = child(etcdc_watch_sup, etcdc_watch_sup, supervisor, []),
-    StreamSup = child(etcdc_stream_sup, etcdc_stream_sup, supervisor, []),
     TTLSup = child(etcdc_ttl_sup, etcdc_ttl_sup, supervisor, []),
     Strategy = {one_for_one, 1, 10},
-    {ok, {Strategy, [WatchSup, StreamSup, TTLSup]}}.
+    {ok, {Strategy, [WatchSup, TTLSup]}}.
 
 %% ----------------------------------------------------------------------------
 
