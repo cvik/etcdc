@@ -1,4 +1,4 @@
-%%  Supervisor for etcdc_watch jobs
+%%  Supervisor for etcdc_stream jobs
 %%
 %% ----------------------------------------------------------------------------
 
@@ -23,11 +23,11 @@ add_child(Args) ->
 %% ----------------------------------------------------------------------------
 
 init(no_arg) ->
-    WatchWorker = child(etcdc_watch, etcdc_watch, worker, []),
+    StreamWorker = child(etcdc_watch, etcdc_watch, worker, []),
     Strategy = {simple_one_for_one, 1, 60},
-    {ok, {Strategy, [WatchWorker]}}.
+    {ok, {Strategy, [StreamWorker]}}.
 
 %% ----------------------------------------------------------------------------
 
 child(Name, Mod, Type, Args) ->
-    {Name, {Mod, start_link, Args}, permanent, 3000, Type, [Mod]}.
+    {Name, {Mod, start_link, Args}, transient, 3000, Type, [Mod]}.

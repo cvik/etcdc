@@ -2,7 +2,7 @@
 
 -export([start/0, stop/0]).
 -export([get/1, get/2, set/2, set/3, del/1, del/2]).
--export([watch/2, watch_continous/2, stop_watch/1]).
+-export([watch/1, watch/2, cancel_watch/1]).
 -export([stats_leader/0, stats_self/0, stats_store/0]).
 -export([get_config/0, set_config/3, list_machines/0, del_machine/1]).
 -export([leader/0, peers/0]).
@@ -86,21 +86,14 @@ del(Key, Opts) ->
 -spec watch(Key :: string(), Recursive :: boolean()) ->
         {ok, Pid :: pid()}
       | {error, Reason :: term()}.
-watch(Key, false) ->
-    etcdc_watch:new(Key, []);
-watch(Key, true) ->
-    etcdc_watch:new(Key, [recursive]).
+watch(Key) ->
+    etcdc_watch:new(Key, []).
 
--spec watch_continous(Key :: string(), Recursive :: boolean()) ->
-        {ok, Pid :: pid()}
-      | {error, Reason :: term()}.
-watch_continous(Key, true) ->
-    etcdc_stream:new(Key, true);
-watch_continous(Key, false) ->
-    etcdc_stream:new(Key, false).
+watch(Key, Opts) ->
+    etcdc_watch:new(Key, Opts).
 
--spec stop_watch(Pid :: pid()) -> ok.
-stop_watch(Pid) ->
+-spec cancel_watch(Pid :: pid()) -> ok.
+cancel_watch(Pid) ->
     supervisor:terminate_child(etcdc_stream_sup, Pid).
 
 %% Stats ----------------------------------------------------------------------
