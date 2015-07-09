@@ -101,7 +101,7 @@ watch_continous(Key, false) ->
 
 -spec stop_watch(Pid :: pid()) -> ok.
 stop_watch(Pid) ->
-    etcdc_stream:stop(Pid).
+    supervisor:terminate_child(etcdc_stream_sup, Pid).
 
 %% Stats ----------------------------------------------------------------------
 
