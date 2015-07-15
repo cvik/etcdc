@@ -14,4 +14,4 @@ ec_gaw.plt
 logs/
 rel/sys.config
 _rel
-.erlang.mk.packages.v2
+.erlang.mk*
