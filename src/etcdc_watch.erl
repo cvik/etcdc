@@ -19,7 +19,7 @@ start_link(Key, Ctrl, Opts) ->
     gen_server:start_link(?MODULE, [Key, Ctrl, Opts], []).
 
 new(Key, Opts) ->
-    etcdc_stream_sup:add_child([Key, self(), Opts]).
+    etcdc_watch_sup:add_child([Key, self(), Opts]).
 
 %% gen_server callbacks -------------------------------------------------------
 
