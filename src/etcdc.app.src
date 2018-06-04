@@ -1,6 +1,6 @@
 {application, etcdc,
  [{description, "etcd client for V2 API"},
-  {vsn, "0.2.3"},
+  {vsn, "0.2.4"},
   {registered, []},
   {applications, [kernel,
                   stdlib,
