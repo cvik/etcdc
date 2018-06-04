@@ -10,6 +10,7 @@
                  | stream
                  | wait
                  | {waitIndex, integer()}.
+
 -type set_opt() :: dir
                  | prevExist
                  | sequence

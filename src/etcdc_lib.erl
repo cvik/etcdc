@@ -33,7 +33,7 @@ ensure_first_slash(Path) -> [$/|Path].
 parse_response(Body) ->
     case lejson:decode(Body) of
         {error, not_json} ->
-            {error, Body};
+            {error, {not_json, Body}};
         Json ->
             {ok, simplify_json(Json)}
     end.
