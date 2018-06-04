@@ -14,13 +14,14 @@ call(Method, PortType, Path, Opts) ->
 call(Method, PortType, Path, Opts, Value) ->
     {Host, Port} = get_server_info(PortType),
     Timeout = get_timeout(Opts),
-    Url = url(Host, Port, Path, proplists:unfold(Opts)),
-    case lhttpc:request(Url, Method, [], Value, Timeout) of
-        {ok, {{Code, _}, _, Body}} when Code >= 200, Code =< 205 ->
+    URL = url(Host, Port, Path, proplists:unfold(Opts)),
+    ClientOpts = [with_body, {pool, default}, {timeout, Timeout}],
+    case hackney:request(Method, URL, [], Value, ClientOpts) of
+        {ok, Code, _, Body} when Code >= 200, Code =< 205 ->
             parse_response(Body);
-        {ok, {{404, _}, _, _}} ->
+        {ok, 404, _, _} ->
             {error, not_found};
-        {ok, {{_, _}, _, Body}} ->
+        {ok, _, _, Body} ->
             {error, parse_response(Body)};
         {error, Error} ->
             {error, Error}

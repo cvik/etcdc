@@ -4,12 +4,12 @@
   {registered, []},
   {applications, [kernel,
                   stdlib,
-                  lhttpc,
+                  hackney,
                   lejson
                  ]},
   {modules, []},
   {mod, {etcdc_app, no_arg}},
   {env, [{etcd_host, "127.0.0.1"},
-         {etcd_client_port, 4001},
-         {etcd_admin_port, 7001}]}
+         {etcd_client_port, 2379},
+         {etcd_admin_port, 2380}]}
  ]}.
