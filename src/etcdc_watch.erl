@@ -37,7 +37,7 @@ handle_cast(check_watch, State) ->
         {error, Error} ->
             Ctrl ! {watch_error, self(), Error},
             {stop, normal, State};
-        #{node:=#{modified_index:=NewIndex}} = Response ->
+        {ok, #{node:=#{modified_index:=NewIndex}}} = Response ->
             Ctrl ! {watch, self(), Response},
             case proplists:get_bool(continous, Opts) of
                 true ->

@@ -25,22 +25,22 @@
 
 %% ----------------------------------------------------------------------------
 
--spec get(string()) -> {ok, #{}} | {error, #{}}.
+-spec get(string()) -> {ok, map()} | {error, any()}.
 get(Path) ->
     get(Path, []).
 
--spec get(string(), [get_opt()]) -> {ok, #{}} | {error, #{}}.
+-spec get(string(), [get_opt()]) -> {ok, map()} | {error, any()}.
 get(Path, Opts) when is_binary(Path) ->
     get(binary_to_list(Path), Opts);
 get(Path, Opts) ->
     FullPath = "/v2/keys" ++ etcdc_lib:ensure_first_slash(Path),
     etcdc_lib:call(get, etcd_client_port, FullPath, Opts).
 
--spec set(string(), iolist()) -> {ok, #{}} | {error, #{}}.
+-spec set(string(), iolist()) -> {ok, map()} | {error, any()}.
 set(Path, Value) ->
     set(Path, Value, []).
 
--spec set(string(), iolist(), [set_opt()]) -> {ok, #{}} | {error, #{}}.
+-spec set(string(), iolist(), [set_opt()]) -> {ok, map()} | {error, any()}.
 set(Path, Value, Opts) when is_binary(Path) ->
     set(binary_to_list(Path), Value, Opts);
 set(Path, Value, Opts) ->
@@ -57,11 +57,11 @@ set(Path, Value, Opts) ->
             Res
     end.
 
--spec del(string()) -> {ok, #{}} | {error, #{}}.
+-spec del(string()) -> {ok, map()} | {error, any()}.
 del(Path) ->
     del(Path, []).
 
--spec del(string(), [del_opt()]) -> {ok, #{}} | {error, #{}}.
+-spec del(string(), [del_opt()]) -> {ok, map()} | {error, any()}.
 del(Path, Opts) ->
     NewPath = "/v2/keys" ++ etcdc_lib:ensure_first_slash(Path),
     etcdc_lib:call(delete, etcd_client_port, NewPath, Opts).
