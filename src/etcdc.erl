@@ -42,11 +42,11 @@ stop() ->
 
 %% Keys -----------------------------------------------------------------------
 
--spec get(string()) -> {ok, #{}} | {error, #{}}.
+-spec get(string()) -> {ok, map()} | {error, any()}.
 get(Path) ->
     etcdc_keys:get(Path).
 
--spec get(string(), [get_opt()]) -> {ok, #{}} | {error, #{}}.
+-spec get(string(), [get_opt()]) -> {ok, map()} | {error, any()}.
 get(Path, Opts) ->
     case verify_opts(get, Opts) of
         true ->
@@ -55,11 +55,11 @@ get(Path, Opts) ->
             {error, bad_arg}
     end.
 
--spec set(string(), iolist()) -> {ok, #{}} | {error, #{}}.
+-spec set(string(), iodata()) -> {ok, map()} | {error, any()}.
 set(Path, Value) ->
     etcdc_keys:set(Path, Value).
 
--spec set(string(), iolist(), [set_opt()]) -> {ok, #{}} | {error, #{}}.
+-spec set(string(), iodata(), [set_opt()]) -> {ok, map()} | {error, any()}.
 set(Path, Value, Opts) ->
     case verify_opts(set, Opts) of
         true ->
@@ -68,11 +68,11 @@ set(Path, Value, Opts) ->
             {error, bad_arg}
     end.
 
--spec del(string()) -> {ok, #{}} | {error, #{}}.
+-spec del(string()) -> {ok, map()} | {error, any()}.
 del(Key) ->
     etcdc_keys:del(Key).
 
--spec del(string(), [del_opt()]) -> {ok, #{}} | {error, #{}}.
+-spec del(string(), [del_opt()]) -> {ok, map()} | {error, any()}.
 del(Key, Opts) ->
     case verify_opts(del, Opts) of
         true ->
@@ -98,29 +98,30 @@ cancel_watch(Pid) ->
 
 %% Stats ----------------------------------------------------------------------
 
--spec stats_leader() -> {ok, #{}} | {error, #{}}.
+-spec stats_leader() -> {ok, map()} | {error, any()}.
 stats_leader() ->
     etcdc_stats:leader().
 
--spec stats_self() -> {ok, #{}} | {error, #{}}.
+-spec stats_self() -> {ok, map()} | {error, any()}.
 stats_self() ->
     etcdc_stats:self().
 
--spec stats_store() -> {ok, #{}} | {error, #{}}.
+-spec stats_store() -> {ok, map()} | {error, any()}.
 stats_store() ->
     etcdc_stats:store().
 
 %% Admin ----------------------------------------------------------------------
 
--spec get_config() -> {ok, #{}} | {error, #{}}.
+-spec get_config() -> {ok, map()} | {error, any()}.
 get_config() ->
     etcdc_admin:get_config().
 
--spec set_config(integer(), integer(), integer()) -> {ok, #{}} | {error, #{}}.
+-spec set_config(integer(), integer(), integer()) -> {ok, map()} |
+                                                     {error, any()}.
 set_config(ActiveSize, RemoveDelay, SyncInterval) ->
     etcdc_admin:set_config(ActiveSize, RemoveDelay, SyncInterval).
 
--spec list_machines() -> {ok, #{}} | {error, #{}}.
+-spec list_machines() -> {ok, map()} | {error, any()}.
 list_machines() ->
     etcdc_admin:list_machines().
 
@@ -148,6 +149,4 @@ get_allowed_opts(get) ->
 get_allowed_opts(set) ->
     [dir, prevExist, sequence, prevValue, prevIndex, ttl, ttl_renew];
 get_allowed_opts(del) ->
-    [recursive, sorted, stream, wait, waitIndex];
-get_allowed_opts(_) ->
-    [].
+    [recursive, sorted, stream, wait, waitIndex].
