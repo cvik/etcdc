@@ -1,19 +1,23 @@
-PROJECT = etcdc
-TAG = $(shell cat src/$(PROJECT).app.src | \
-	    sed -n -e 's/{vsn, \"\(.*\)\"},/\1/p' | \
-		xargs)
+.PHONY: all compile xref dialyzer test
 
-DEPS = lhttpc \
-	   lejson
+all: xref
 
-dep_lejson = git git@github.com:campanja-forks/lejson.git 0.4.1
-dep_lhttpc = git https://github.com/esl/lhttpc.git otp-17-compat
+compile:
+	@rebar3 compile
 
-AUTOPATCH +=
+xref:
+	@rebar3 xref
 
-include erlang.mk
+dialyzer:
+	@rebar3 dialyzer
 
-.PHONY:
+tests:
+	@rebar3 eunit
 
-all::
-	@erlc -o ebin -pa ebin test/*.erl
+test: clean xref tests dialyzer
+
+clean:
+	@rebar3 clean
+
+distclean: clean
+	@rm -rfv _build

@@ -9,9 +9,5 @@ erl_crash.dump
 *.swp
 *.swo
 .rebar/
-doc/
-ec_gaw.plt
-logs/
-rel/sys.config
 _rel
-.erlang.mk*
+_build
