@@ -7,6 +7,9 @@
                   hackney,
                   lejson
                  ]},
+  {maintainers, ["Christoffer Vikstrom"]},
+  {licenses, ["Apache License, Version 2.0"]},
+  {links, [{"Github", "https://github.com/cvik/etcdc"}]},
   {modules, []},
   {mod, {etcdc_app, no_arg}},
   {env, [{etcd_host, "127.0.0.1"},
