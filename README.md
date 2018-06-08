@@ -1,4 +1,4 @@
-## etcdc - Erlang etcd client library
+## etcdc - Erlang etcd client library (v2 only)
 
 ## License
 
