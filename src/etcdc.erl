@@ -1,7 +1,8 @@
 -module(etcdc).
 
 -export([start/0, stop/0]).
--export([get/1, get/2, set/2, set/3, del/1, del/2]).
+-export([get/1, get/2, get_val/1, get_all/0, ls/1, ls_all/0,
+         set/2, set/3, del/1, del/2]).
 -export([watch/1, watch/2, cancel_watch/1]).
 -export([stats_leader/0, stats_self/0, stats_store/0]).
 -export([get_config/0, set_config/3, list_machines/0, del_machine/1]).
@@ -53,6 +54,44 @@ get(Path, Opts) ->
             etcdc_keys:get(Path, Opts);
         false ->
             {error, bad_arg}
+    end.
+
+-spec get_val(string()) -> {ok, binary()} | {error, any()}.
+get_val(Path) ->
+    case etcdc_keys:get(Path) of
+        {ok, #{node:=#{dir:=true}}} ->
+            {error, directory};
+        {ok, #{node:=#{value:=Value}}} ->
+            {ok, Value}
+    end.
+
+-spec get_all() -> [{binary(), binary()}] | {error, any()}.
+get_all() ->
+    case get("/", [recursive,sorted]) of
+        {ok, #{node:=RootNode}} ->
+            lists:flatten(get_key_vals(RootNode));
+        {error, Error} ->
+            {error, Error}
+    end.
+
+-spec ls(string()) -> [binary()] | {error, any()}.
+ls(Path) ->
+    case etcdc_keys:get(Path) of
+        {ok, #{node:=#{dir:=true, nodes:=Nodes}}} ->
+            [Key || #{key:=Key} <- Nodes];
+        {ok, #{node:=#{value:=_}}} ->
+            [];
+        {error, Error} ->
+            {error, Error}
+    end.
+
+-spec ls_all() -> [binary()] | {error, any()}.
+ls_all() ->
+    case get_all() of
+        {error, Error} ->
+            {error, Error};
+        KeyVals ->
+            [K || {K, _} <- KeyVals]
     end.
 
 -spec set(string(), iodata()) -> {ok, map()} | {error, any()}.
@@ -150,3 +189,8 @@ get_allowed_opts(set) ->
     [dir, prevExist, sequence, prevValue, prevIndex, ttl, ttl_renew];
 get_allowed_opts(del) ->
     [recursive, sorted, stream, wait, waitIndex].
+
+get_key_vals(#{dir:=true, nodes:=Nodes}) ->
+    [get_key_vals(N) || N <- Nodes];
+get_key_vals(#{key:=Key, value:=Value}) ->
+    [{Key, Value}].
