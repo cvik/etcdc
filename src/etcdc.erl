@@ -192,5 +192,7 @@ get_allowed_opts(del) ->
 
 get_key_vals(#{dir:=true, nodes:=Nodes}) ->
     [get_key_vals(N) || N <- Nodes];
+get_key_vals(#{dir:=true, key:=_Key}) ->
+    [];
 get_key_vals(#{key:=Key, value:=Value}) ->
     [{Key, Value}].
